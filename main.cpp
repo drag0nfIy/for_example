@@ -9,11 +9,11 @@ using namespace std;
         cout << endl;
     	}	
 	}
-	int input(){
+	void input(){
 		int b; char a;
 		cin >> a >> b;
 	}
-	int switch_char (char a, bool &flag){ //j
+	void switch_char (char a, bool &flag){ //j
 		switch (a){
 			case 'A':{
 				j = 1;
@@ -54,7 +54,7 @@ using namespace std;
 			}
 		}
 	}
-	int switch_int (int b, bool &flag){//i
+	void switch_int (int b, bool &flag){//i
 		switch (b){
 			case 1:{
 				i = 7;
@@ -94,7 +94,6 @@ using namespace std;
 				break;
 			}
 		}
-		return i;
 	}
 
 int main(){
