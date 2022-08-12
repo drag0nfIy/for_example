@@ -1,9 +1,22 @@
 #include <iostream>
 #include <string>
 #include <iomanip>
+#include <cstdlib>
+#include <algorithm>
+
 using namespace std;
-	int i, j;
-	void print(char ( &A )[9][9] ){
+    char A[9][9]{
+    {'8','r','b','k','e','q','k','b','r'},
+    {'7','p','p','p','p','p','p','p','p'},
+    {'6','0','0','0','0','0','0','0','0'},
+    {'5','0','0','0','0','0','0','0','0'},
+    {'4','0','0','0','0','0','0','0','0'},
+    {'3','0','0','0','0','0','0','0','0'},
+    {'2','P','P','P','P','P','P','P','P'},
+    {'1','R','B','K','E','Q','K','B','R'},
+    {' ', 'A','B','C','D','E','F','G','H'}
+	};
+	void print(){
 		for (int i = 0; i < 9; i++) {
         	for (int j = 0; j < 9; j++) cout << setw(2) << A[i][j];
         cout << endl;
@@ -13,8 +26,9 @@ using namespace std;
 		int b; char a;
 		cin >> a >> b;
 	}
-	void switch_char (char a, bool &flag){ //j
-		switch (a){
+	int switch_char (char ch, bool &flag){ //j (столбец)
+        int j;
+		switch (ch){
 			case 'A':{
 				j = 1;
 				break;
@@ -53,8 +67,10 @@ using namespace std;
 				break;
 			}
 		}
+        return j;
 	}
-	void switch_int (int b, bool &flag){//i
+	int switch_int (int b, bool &flag){//i (строка)
+        int i;
 		switch (b){
 			case 1:{
 				i = 7;
@@ -94,33 +110,33 @@ using namespace std;
 				break;
 			}
 		}
+        return i;
 	}
 
 int main(){
-	char A[9][9]{
-    {'8','0','0','0','0','0','0','0','0'},
-    {'7','0','0','0','0','0','0','0','0'},
-    {'6','0','0','0','0','0','0','0','0'},
-    {'5','0','0','0','0','0','0','0','0'},
-    {'4','0','0','0','0','0','0','0','0'},
-    {'3','0','0','0','0','0','0','0','0'},
-    {'2','0','0','0','0','0','0','0','0'},
-    {'1','0','0','0','0','0','0','0','0'},
-    {' ', 'A','B','C','D','E','F','G','H'}
-	};
-	print(A); // вывод матрицы на консоль
+	print(); // вывод матрицы на консоль
 	//int i, j;  индексы матрицы. i - строка(cooтветствует цифрам); j - столбец(соотв. буквам)
-	char a; int b; // номер клетки
+	char ch, new_ch; int a, new_a, separator; // номер клетки
+    int i, j, new_i, new_j;
 	bool flag = 1; 
 
-	do{
+	do{ // текущее местонахождение фигуры
 		flag = 1;
-		cin >> a >> b;
-		switch_char(a, flag);
-		if (flag) switch_int(b, flag);
+		cin >> ch >> a;
+		j = switch_char(ch, flag);
+		if (flag) i = switch_int(a, flag);
 	} while (!flag);
-	cout << i << " " << j;
-
-
+	//cout << i << " " << j << endl;
+    //cin >> separator;
+    do{ // место, куда нужно переставить фигуру
+		flag = 1;
+		cin >> new_ch >> new_a;
+		new_j = switch_char(new_ch, flag);
+		if (flag) new_i = switch_int(new_a, flag);
+	} while (!flag);
+	//cout << new_i << " " << new_j << endl;
+    swap(A[i][j], A[new_i][new_j]);
+    print();
+    system("pause");
 	
 }
