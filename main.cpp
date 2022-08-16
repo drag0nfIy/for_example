@@ -7,23 +7,23 @@
 
 using namespace std;
 
-    char A[9][9]{
-    {'8','r','h','b','q','k','b','h','r'},
-    {'7','p','p','p','p','p','p','p','p'},
-    {'6','0','0','0','0','0','0','0','0'},
-    {'5','0','0','0','0','0','0','0','0'},
-    {'4','0','0','0','0','0','0','0','0'},
-    {'3','0','0','0','0','0','0','0','0'},
-    {'2','P','P','P','P','P','P','P','P'},
-    {'1','R','H','B','Q','K','B','H','R'},
-    {' ','A','B','C','D','E','F','G','H'}
-	};
-	string up = "PRHBQK"; // для проверки на взятие своих фигур
-	string down = "prhbqk";
-	
-	int determine = 0; //счётчик для определения противника.Б.Ф(Верхний регистр)-нечётные; ч.ф(нижний р)-чётные.
-	struct chess_figures{
-		bool define_figure(int i, int j, int new_i, int new_j){
+char A[9][9]{
+{'8','r','h','b','q','k','b','h','r'},
+{'7','p','p','p','p','p','p','p','p'},
+{'6','0','0','0','0','0','0','0','0'},
+{'5','0','0','0','0','0','0','0','0'},
+{'4','0','0','0','0','0','0','0','0'},
+{'3','0','0','0','0','0','0','0','0'},
+{'2','P','P','P','P','P','P','P','P'},
+{'1','R','H','B','Q','K','B','H','R'},
+{' ','A','B','C','D','E','F','G','H'}
+};
+string up = "PRHBQK"; // для проверки на взятие своих фигур
+string down = "prhbqk";
+
+int determine = 0; //счётчик для определения противника.Б.Ф(Верхний регистр)-нечётные; ч.ф(нижний р)-чётные.
+struct chess_figures{
+	bool define_figure(int i, int j, int new_i, int new_j){
 			bool flag = false;
 			if (A[i][j] == 'P' || A[i][j] == 'p') { return flag = pawn_move(i, j, new_i, new_j); }
 			if (A[i][j] == 'R' || A[i][j] == 'r') { return flag = rook_move(i, j, new_i, new_j); }
@@ -31,49 +31,105 @@ using namespace std;
 			if (A[i][j] == 'H' || A[i][j] == 'h') { return flag = horse_move(i, j, new_i, new_j); }
 			if (A[i][j] == 'K' || A[i][j] == 'k') { return flag = king_move(i, j, new_i, new_j); }
 			if (A[i][j] == 'Q' || A[i][j] == 'q') { return flag = qween_move(i, j, new_i, new_j); }
-			return flag; // возвращение флага
+			return flag;
+	}
+	bool pawn_move(int i, int j, int new_i, int new_j){ //без учёта взятия на проходе
+	if (!(determine % 2)){// black
+		if (j == new_j){
+			if (new_i == i+1) return true;
+			if ((new_i == i + 2 && i == 1)&& A[i+1][j] == '0') return true;
+			
 		}
-		bool pawn_move(int i, int j, int new_i, int new_j){ //простой ход без взятия
-		if (!(determine % 2)){// black
-			if (j == new_j){
-				if (new_i == i+1) return true;
-				if ((new_i == i + 2 && i == 1)&& A[i+1][j] == '0') return true;
+		else if (new_i == i + 1 && A[new_i][new_j] != '0'){
+			if (new_j == j + 1 || new_j == j - 1){
+				for (int k = 0; k < up.size(); k++){
+					if (A[new_i][new_j] == up[k]) return true;
+				}
+			}
+			else return false;
+		}
+	}
+	if (determine % 2){ // WHITE
+		if (j == new_j){
+			if (new_i == i-1 ) return true;
+			if ((new_i == i - 2 && i == 6) && A[i-1][j] == '0') return true;
+		}
+		else if (new_i == i - 1 && A[new_i][new_j] != '0'){
+			if (new_j == j + 1 || new_j == j - 1){
+				for (int k = 0; k < down.size(); k++){
+					if (A[new_i][new_j] == down[k]) return true;
+				}
+			}
+			else return false;
+		}
+	}
+	return false;
+	}
+	bool rook_move(int i, int j, int new_i, int new_j) {
+			if (!(determine % 2)){//black
+				if (new_j == j){
+					if (i > new_i){
+						for (int h = i - 1; h > new_i; h-- ) if (A[h][new_j] != '0') return false;
+						if (A[new_i][new_j] == '0') return true;
+						for (int k = 0; k < up.size(); k++) if (A[new_i][new_j] == up[k]) return true;
+					}
+					else if (i < new_i){
+						for (int h = i + 1; h < new_i; h++) if (A[h][new_j] != '0') return false;
+						if (A[new_i][new_j] == '0') return true;
+						for (int k = 0; k < up.size(); k++) if (A[new_i][new_j] == up[k]) return true;
+					} 
+				}
+				if (new_i == i){
+					if (j > new_j){
+						for (int h = j - 1; h > new_j; h--) if (A[new_i][h] != '0') return false;
+						if (A[new_i][new_j] == '0') return true;
+						for (int k = 0; k < up.size(); k++) if (A[new_i][new_j] == up[k]) return true;
+					}
+					else if (j < new_j){
+						for (int h = j + 1; h < new_j; h++) if (A[new_i][h] != '0') return false;
+						if (A[new_i][new_j] == '0') return true;
+						for (int k = 0; k < up.size(); k++) if (A[new_i][new_j] == up[k]) return true;
+					}	
 				
-			}
-			else if (new_i == i + 1 && A[new_i][new_j] != '0'){
-				if (new_j == j + 1 || new_j == j - 1){
-					for (int k = 0; k < up.size(); k++){
-						if (A[new_i][new_j] == up[k]) return true;
-					}
 				}
-				else return false;
 			}
-		}
-		if (determine % 2){ // WHITE
-			if (j == new_j){
-				if (new_i == i-1 ) return true;
-				if ((new_i == i - 2 && i == 6) && A[i-1][j] == '0') return true;
-			}
-			else if (new_i == i - 1 && A[new_i][new_j] != '0'){
-				if (new_j == j + 1 || new_j == j - 1){
-					for (int k = 0; k < down.size(); k++){
-						if (A[new_i][new_j] == down[k]) return true;
+			if (determine % 2){ // WHITE
+				if (new_j == j){
+					if (i > new_i){
+						for (int h = i - 1; h > new_i; h-- ) if (A[h][new_j] != '0') return false;
+						if (A[new_i][new_j] == '0') return true;
+						for (int k = 0; k < down.size(); k++) if (A[new_i][new_j] == down[k]) return true;
 					}
+					else if (i < new_i){
+						for (int h = i + 1; h < new_i; h++) if (A[h][new_j] != '0') return false;
+						if (A[new_i][new_j] == '0') return true;
+						for (int k = 0; k < down.size(); k++) if (A[new_i][new_j] == down[k]) return true;
+					} 
 				}
-				else return false;
+				if (new_i == i){
+					if (j > new_j){
+						for (int h = j - 1; h > new_j; h--) if (A[new_i][h] != '0') return false;
+						if (A[new_i][new_j] == '0') return true;
+						for (int k = 0; k < down.size(); k++) if (A[new_i][new_j] == down[k]) return true;
+					}
+					else if (j < new_j){
+						for (int h = j + 1; h < new_j; h++) if (A[new_i][h] != '0') return false;
+						if (A[new_i][new_j] == '0') return true;
+						for (int k = 0; k < down.size(); k++) if (A[new_i][new_j] == down[k]) return true;
+					}	
+				
+				}
 			}
-		}
-		return false;
-		}
+			return false;
+	}
+	
+	bool bishop_move(int i, int j, int new_i, int new_j) {}
+	bool horse_move(int i, int j, int new_i, int new_j) {}
+	bool king_move(int i, int j, int new_i, int new_j) {}
+	bool qween_move(int i, int j, int new_i, int new_j) {}
+};
 
-		bool rook_move(int i, int j, int new_i, int new_j) {}
-		bool bishop_move(int i, int j, int new_i, int new_j) {}
-		bool horse_move(int i, int j, int new_i, int new_j) {}
-		bool king_move(int i, int j, int new_i, int new_j) {}
-		bool qween_move(int i, int j, int new_i, int new_j) {}
-	};
-
-	void print(){
+void print(){
 		cout << "\n     A B C D E F G H" << endl;
 		for (int i = 0; i < 9; i++) {
 			cout << "  ";
@@ -82,14 +138,13 @@ using namespace std;
      		cout << endl;
 		}
 		cout << endl;
-	}
-	
-	void rearranging(int i, int j, int new_i, int new_j){
+}
+
+void rearranging(int i, int j, int new_i, int new_j){
 		A[new_i][new_j] = A[i][j];
 		A[i][j] = '0';
-	}
-
-	int switch_char (char ch, bool &flag){ //j (столбец)
+}
+int switch_char (char ch, bool &flag){ //j (столбец)
         int j;
 		switch (ch){
 			case 'A':{
@@ -131,53 +186,50 @@ using namespace std;
 			}
 		}
         return j;
-	}
-
-	int switch_int (char int_, bool &flag){//i (строка)
-        int i;
-		switch (int_){
-			case '1':{
-				i = 7;
-				break;
-			}
-			case '2':{
-				i = 6;
-				break;
-			}
-			case '3':{
-				i = 5;
-				break;
-			}
-			case '4':{
-				i = 4;
-				break;
-			}
-			case '5':{
-				i = 3;
-				break;
-			}
-			case '6':{
-				i = 2;
-				break;
-			}
-			case '7':{
-				i = 1;
-				break;
-			}
-			case '8':{
-				i = 0;
-				break;
-			}
-			default:{
-				flag = 0;
-				cout << "wrong checkerboard cage.(int)" << endl;
-				break;
-			}
+}
+int switch_int (char int_, bool &flag){//i (строка)
+    int i;
+	switch (int_){
+		case '1':{
+			i = 7;
+			break;
 		}
-        return i;
+		case '2':{
+			i = 6;
+			break;
+		}
+		case '3':{
+			i = 5;
+			break;
+		}
+		case '4':{
+			i = 4;
+			break;
+		}
+		case '5':{
+			i = 3;
+			break;
+		}
+		case '6':{
+			i = 2;
+			break;
+		}
+		case '7':{
+			i = 1;
+			break;
+		}
+		case '8':{
+			i = 0;
+			break;
+		}
+		default:{
+			flag = 0;
+			cout << "wrong checkerboard cage.(int)" << endl;
+			break;
+		}
 	}
-
-	
+    return i;
+}
 
 int main(){
 	print(); // вывод матрицы на консоль
