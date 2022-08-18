@@ -19,8 +19,8 @@ char A[9][9]{
 {' ','A','B','C','D','E','F','G','H'}
 };
 int numbers_for_bishop[7] = {2, 8, 18, 32, 50, 72, 98}; // для проверки на диагональ слона
-string up = "PRHBQK"; // для проверки на взятие своих фигур
-string down = "prhbqk";
+string up = "PRHBQK0"; // для проверки на взятие своих фигур
+string down = "prhbqk0";
 
 int determine = 0; //счётчик для определения противника.Б.Ф(Верхний регистр)-нечётные; ч.ф(нижний р)-чётные.
 struct chess_figures{
@@ -156,7 +156,68 @@ struct chess_figures{
 		}
 		else return false;
 	}
-	bool horse_move(int i, int j, int new_i, int new_j) {}
+	bool horse_move(int i, int j, int new_i, int new_j) {
+		if (!(determine % 2)){// black
+			bool flag = false;
+			for (int k = 0; k < up.size(); k++){
+					if (A[new_i][new_j] == up[k]){
+						flag = true;
+						break;
+					}
+				}
+			if (flag){
+				if (new_j == j + 1){
+					if (new_i == i - 2) return true;
+					if (new_i == i + 2) return true;
+				}
+				if (new_j == j - 1){
+					if (new_i == i - 2) return true;
+					if (new_i == i + 2) return true;
+				}
+				if (new_j == j + 2){
+					if (new_i == i + 1) return true;
+					if (new_i == i - 1) return true;
+				}
+				if (new_j == j - 2){
+					if (new_i == i + 1) return true;
+					if (new_i == i - 1) return true;
+				}
+				return false;
+			}
+			else return false;
+			
+		}
+		if (determine%2){ //WHITE
+			bool flag = false;
+			for (int k = 0; k < down.size(); k++){
+					if (A[new_i][new_j] == down[k]){
+						flag = true;
+						break;
+					}
+				}
+			if (flag){
+				if (new_j == j + 1){
+					if (new_i == i - 2) return true;
+					if (new_i == i + 2) return true;
+				}
+				if (new_j == j - 1){
+					if (new_i == i - 2) return true;
+					if (new_i == i + 2) return true;
+				}
+				if (new_j == j + 2){
+					if (new_i == i + 1) return true;
+					if (new_i == i - 1) return true;
+				}
+				if (new_j == j - 2){
+					if (new_i == i + 1) return true;
+					if (new_i == i - 1) return true;
+				}
+				return false;
+			} 
+			else return false;
+		}
+		
+	}
 	bool king_move(int i, int j, int new_i, int new_j) {}
 	bool qween_move(int i, int j, int new_i, int new_j) {}
 };
@@ -176,6 +237,7 @@ void rearranging(int i, int j, int new_i, int new_j){
 		A[new_i][new_j] = A[i][j];
 		A[i][j] = '0';
 }
+
 int switch_char (char ch, bool &flag){ //j (столбец)
         int j;
 		switch (ch){
@@ -183,7 +245,15 @@ int switch_char (char ch, bool &flag){ //j (столбец)
 				j = 1;
 				break;
 			}
+			case 'a':{
+				j = 1;
+				break;
+			}
 			case 'B':{
+				j = 2;
+				break;
+			}
+			case 'b':{
 				j = 2;
 				break;
 			}
@@ -191,7 +261,15 @@ int switch_char (char ch, bool &flag){ //j (столбец)
 				j = 3;
 				break;
 			}
+			case 'c':{
+				j = 3;
+				break;
+			}
 			case 'D':{
+				j = 4;
+				break;
+			}
+			case 'd':{
 				j = 4;
 				break;
 			}
@@ -199,7 +277,15 @@ int switch_char (char ch, bool &flag){ //j (столбец)
 				j = 5;
 				break;
 			}
+			case 'e':{
+				j = 5;
+				break;
+			}
 			case 'F':{
+				j = 6;
+				break;
+			}
+			case 'f':{
 				j = 6;
 				break;
 			}
@@ -207,7 +293,15 @@ int switch_char (char ch, bool &flag){ //j (столбец)
 				j = 7;
 				break;
 			}
+			case 'g':{
+				j = 7;
+				break;
+			}
 			case 'H':{
+				j = 8;
+				break;
+			}
+			case 'h':{
 				j = 8;
 				break;
 			}
@@ -219,6 +313,7 @@ int switch_char (char ch, bool &flag){ //j (столбец)
 		}
         return j;
 }
+
 int switch_int (char int_, bool &flag){//i (строка)
     int i;
 	switch (int_){
