@@ -1,7 +1,8 @@
 #include <iostream>
-#include <string>
 #include <iomanip>
 #include <cstdlib>
+#include <string>
+#include <vector>
 #include <algorithm>
 #include <windows.h>
 
@@ -18,11 +19,11 @@ char A[9][9]{
 {'1','R','H','B','Q','K','B','H','R'},
 {' ','A','B','C','D','E','F','G','H'}
 };
-int numbers_for_bishop[7] = {2, 8, 18, 32, 50, 72, 98}; // для проверки на диагональ слона
+vector <int> numbers_for_bishop = {2, 8, 18, 32, 50, 72, 98}; // для проверки на диагональ слона
 string up = "PRHBQK0"; // для проверки на взятие своих фигур
 string down = "prhbqk0";
-
 int determine = 0; //счётчик для определения противника.Б.Ф(Верхний регистр)-нечётные; ч.ф(нижний р)-чётные.
+
 struct chess_figures{
 	bool define_figure(int i, int j, int new_i, int new_j){
 			bool flag = false;
@@ -31,7 +32,7 @@ struct chess_figures{
 			if (A[i][j] == 'B' || A[i][j] == 'b') { return flag = bishop_move(i, j, new_i, new_j); }
 			if (A[i][j] == 'H' || A[i][j] == 'h') { return flag = horse_move(i, j, new_i, new_j); }
 			if (A[i][j] == 'K' || A[i][j] == 'k') { return flag = king_move(i, j, new_i, new_j); }
-			if (A[i][j] == 'Q' || A[i][j] == 'q') { return flag = qween_move(i, j, new_i, new_j); }
+			if (A[i][j] == 'Q' || A[i][j] == 'q') { return flag = queen_move(i, j, new_i, new_j); }
 			return flag;
 	}
 	bool pawn_move(int i, int j, int new_i, int new_j){ //без учёта взятия на проходе
@@ -127,24 +128,39 @@ struct chess_figures{
 	bool bishop_move(int i, int j, int new_i, int new_j) {
 		bool flag = false;
 		int square = (i - new_i)*(i - new_i) + (j-new_j)*(j-new_j);
-		for (int m = 0; m < 8; m++){ //проверка на возможность хода по диагонали
+		for (int m = 0; m < numbers_for_bishop.size(); m++){ //проверка на возможность хода по диагонали
 			if (square == numbers_for_bishop[m]){
 				flag = true; 
 				break;
 			}
 		}
 		if (flag){
-			int max_i = max(i, new_i);
-			int max_j = max(j, new_j);
-			int min_i = min (i, new_i);
-			int min_j = min (j, new_j);
-			for (int h = min_i + 1; h < max_i; h++){ //проверка на наличие фигур, мешающих перестановке
-				for (int k = min_j + 1; k < max_j; k++){
-					if (A[h][k] != '0') return false;
+		if (j < new_j){ // проверка на наличие фигур, мешающих перестановке
+			if (i > new_i){
+				for (int ii = i - 1,  jj = j + 1; ii > new_i, jj < new_j; ii--, jj++){
+					if (A[ii][jj] != '0') return false;
 				}
 			}
+			if (i < new_i){
+				for (int ii = i + 1,  jj = j + 1; ii < new_i, jj < new_j; ii++, jj++){
+					if (A[ii][jj] != '0') return false;
+				}				
+			}
+		}
+		else if (j > new_j){
+			if (i > new_i){
+				for (int ii = i - 1, jj = j - 1; ii > new_i, jj > new_j; ii-- , jj--){
+					if (A[ii][jj] != '0') return false;
+				}
+			}
+			if (i < new_i){
+				for (int ii = i + 1, jj = j - 1; ii < new_i, jj > new_j; ii++ , jj--){
+					if (A[ii][jj] != '0') return false;
+				}
+			}
+		}
+		
 			if (A[new_i][new_j] == '0') return true;
-
 			if (!(determine % 2)){//black
 				for (int k = 0; k < up.size(); k++) 
 					if (A[new_i][new_j] == up[k]) return true;
@@ -154,7 +170,7 @@ struct chess_figures{
 					if (A[new_i][new_j] == down[k]) return true;
 			}
 		}
-		else return false;
+		return false;
 	}
 	bool horse_move(int i, int j, int new_i, int new_j) {
 		if (!(determine % 2)){// black
@@ -216,10 +232,13 @@ struct chess_figures{
 			} 
 			else return false;
 		}
-		
+		return false;
 	}
 	bool king_move(int i, int j, int new_i, int new_j) {}
-	bool qween_move(int i, int j, int new_i, int new_j) {}
+	bool queen_move(int i, int j, int new_i, int new_j) {
+		if (rook_move(i, j, new_i, new_j) || bishop_move(i, j, new_i, new_j)) return true;
+		else return false;
+	}
 };
 
 void print(){
